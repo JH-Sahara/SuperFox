@@ -44,3 +44,6 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Fox
+    uniqueID: 4040812465
+    locked: 0
