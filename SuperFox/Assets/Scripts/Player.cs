@@ -5,11 +5,15 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public Rigidbody2D playerRigidbody; //角色的刚体组件
+    public Animator playerAnimator; //角色动画控制器
+    public LayerMask ground;
     public int speed = 10; //初始速度
+    public int jumpForce = 50; //初始力
     // Start is called before the first frame update
     void Start()
     {
         playerRigidbody = GetComponent<Rigidbody2D>();
+        playerAnimator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -21,6 +25,7 @@ public class Player : MonoBehaviour
     void FixedUpdate()
     {
         Move();
+        ChangeAnimation();
     }
 
     //角色的移动函数
@@ -28,6 +33,11 @@ public class Player : MonoBehaviour
     {
         //首先获取玩家的输入
         float input = Input.GetAxisRaw("Horizontal");
+
+        //角色动画的控制
+        playerAnimator.SetFloat("running",Mathf.Abs(input));
+
+        //角色移动
         if (input != 0)
         {
             playerRigidbody.velocity = new Vector2(input*speed*Time.fixedDeltaTime,playerRigidbody.velocity.y);
@@ -37,6 +47,30 @@ public class Player : MonoBehaviour
             }else{
                 transform.localScale = new Vector3(-1,1,1);
             }
+        }
+
+        //判断是否跳跃
+        if (Input.GetButton("Jump"))
+        {
+            playerAnimator.SetBool("idling",false);
+            playerAnimator.SetBool("jumping",true);
+            playerRigidbody.velocity = new Vector2(playerRigidbody.velocity.x,jumpForce*Time.fixedDeltaTime);
+        }
+    }
+
+    //角色移动等动画的更新
+    void ChangeAnimation()
+    {
+        if (playerAnimator.GetBool("jumping"))
+        {
+            if (playerRigidbody.velocity.y < 0)
+            {
+                playerAnimator.SetBool("jumping",false);
+                playerAnimator.SetBool("falling",true);
+            }
+        }else if (playerRigidbody.IsTouchingLayers(ground) && playerRigidbody.velocity.y<=0){
+            playerAnimator.SetBool("falling",false);
+            playerAnimator.SetBool("idling",true);
         }
     }
 }
