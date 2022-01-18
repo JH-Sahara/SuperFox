@@ -9,7 +9,6 @@ public class EnterDialog : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other) {
         if (other.tag == "Player")
         {
-            enterDialog.SetActive(false);
             enterDialog.SetActive(true);
             ani.SetBool("exiting",false);
         }
