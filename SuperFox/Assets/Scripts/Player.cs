@@ -33,7 +33,7 @@ public class Player : MonoBehaviour
     void Move()
     {
         //首先获取玩家的输入
-        float input = Input.GetAxisRaw("Horizontal");
+        float input = Input.GetAxis("Horizontal");
 
         //角色动画的控制
         playerAnimator.SetFloat("running",Mathf.Abs(input));
@@ -92,7 +92,7 @@ public class Player : MonoBehaviour
         {
             bool isCrouching = playerAnimator.GetBool("crouching");
             playerAnimator.SetBool("crouching",!isCrouching);
-            gameObject.GetComponent<BoxCollider2D>().enabled = isCrouching;
+            gameObject.GetComponent<CapsuleCollider2D>().enabled = isCrouching;
         }
     }
 }
