@@ -6,6 +6,7 @@ public class PlayerController : MonoBehaviour
 {
   public Rigidbody2D rb; //Player刚体组件
   public int speed = 10; //角色速度
+  public int jumpForce = 10; //角色跳跃力度
 
   private Vector2 dir; //接收输入
     void Start()
@@ -26,8 +27,16 @@ public class PlayerController : MonoBehaviour
         dir = new Vector2(x,y);
     }
 
+    //左右行走
     private void Walk(Vector2 dir)
     {
         rb.velocity = new Vector2(dir.x * speed,rb.velocity.y);
+    }
+
+    //跳跃
+    private void Jump(Vector2 dir)
+    {
+        rb.velocity = new Vector2(rb.velocity.x,0);
+        rb.velocity += dir * jumpForce;
     }
 }
