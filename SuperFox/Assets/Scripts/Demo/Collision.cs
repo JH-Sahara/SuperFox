@@ -10,6 +10,7 @@ public class Collision : MonoBehaviour
     [Space]
 
     public bool onGround; //是否在碰撞面上
+    private bool changeGround;
     public bool onWall; //是否在墙上
     public bool onLeftWall; 
     public bool onRightWall; 
@@ -22,6 +23,8 @@ public class Collision : MonoBehaviour
     public Vector2 bottomOffset,leftOffset,rightOffset;
     public Color debugCollisionColor = Color.red;
 
+    private float groundTime = 0f; //容错时间
+    private float maxGroundTime = .3f; //最大容错时间
 
     // Start is called before the first frame update
     void Start()
@@ -32,7 +35,19 @@ public class Collision : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        onGround = Physics2D.OverlapCircle((Vector2)transform.position + bottomOffset,collisionRadius,groundLayer);
+        changeGround = Physics2D.OverlapCircle((Vector2)transform.position + bottomOffset,collisionRadius,groundLayer);
+        if (changeGround)
+        {
+            onGround = changeGround;
+        }else{
+            groundTime += Time.deltaTime;
+            if (groundTime > maxGroundTime)
+            {
+                onGround = changeGround;
+                groundTime = 0f;
+            }
+        }
+        
         onWall = Physics2D.OverlapCircle((Vector2)transform.position + leftOffset,collisionRadius,groundLayer)
             || Physics2D.OverlapCircle((Vector2)transform.position + rightOffset,collisionRadius,groundLayer);
         
