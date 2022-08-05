@@ -38,7 +38,7 @@ public class PlayerController : MonoBehaviour
     {
         Walk(dir);
 
-        if (wallGrab)
+        if (wallGrab && !wallJumped)
         {
             rb.velocity = new Vector2(rb.velocity.x,dir.y * speed);
             rb.gravityScale = 0;
@@ -55,7 +55,7 @@ public class PlayerController : MonoBehaviour
 
         wallGrab = coll.onWall && Input.GetKey(KeyCode.LeftShift);
 
-        if (coll.onWall && !coll.onGround)
+        if (coll.onWall && !coll.onGround && rb.velocity.y<.1f)
         {
             WallSlide();
         }
@@ -63,13 +63,21 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (coll.onGround)
+            {
                 Jump(Vector2.up);
+            }  
+            if (coll.onWall && !coll.onGround)
+            {
+                WallJump();
+            }
         }
     }
 
     //左右行走
     private void Walk(Vector2 dir)
     {
+        if (wallJumped)
+            return;//TODO:何时修改wall Jumped的值来恢复左右控制权
         rb.velocity = new Vector2(dir.x * speed,rb.velocity.y);
     }
 
@@ -78,6 +86,7 @@ public class PlayerController : MonoBehaviour
     {
         rb.velocity = new Vector2(rb.velocity.x,0);
         rb.velocity += dir * jumpForce;
+        Debug.Log(rb.velocity);
     }
 
     private void WallSlide()
@@ -90,5 +99,14 @@ public class PlayerController : MonoBehaviour
 
         float push = pushingWall ? 0 : rb.velocity.x;
         rb.velocity = new Vector2(push,-slideSpeed);
+    }
+
+    //墙跳
+    private void WallJump()
+    {
+        Vector2 wallDir = coll.onRightWall ? Vector2.left : Vector2.right;
+
+        wallJumped = true;
+        Jump(Vector2.up + wallDir);
     }
 }
